@@ -77,5 +77,5 @@ def run_crawler(websites: str, manager_params: ManagerParams, browser_params: Li
 if __name__ == "__main__":
     manager_params, browser_params = configure_crawl(threads=10)
 
-    run_crawler(websites="top-100.csv",
+    run_crawler(websites="top1M.csv",
                 manager_params=manager_params, browser_params=browser_params)
