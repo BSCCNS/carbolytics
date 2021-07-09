@@ -1,6 +1,7 @@
 from typing import Tuple, List
 from pathlib import Path
 import csv
+import os
 
 # Due to OpenWPM implementation, has to be copied to it's dir
 from openwpm.config import BrowserParams, ManagerParams, validate_crawl_configs
@@ -75,7 +76,10 @@ def run_crawler(websites: str, manager_params: ManagerParams, browser_params: Li
 
 
 if __name__ == "__main__":
-    manager_params, browser_params = configure_crawl(threads=10)
+    jobs = os.getenv("N_BROWSERS")
+    print(f"Running with {jobs} browser(s)")
+    manager_params, browser_params = configure_crawl(
+        threads=int(jobs))
 
     run_crawler(websites="top1M.csv",
                 manager_params=manager_params, browser_params=browser_params)

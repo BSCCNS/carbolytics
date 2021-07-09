@@ -36,7 +36,7 @@ RUN mv firefox-bin /opt/firefox-bin
 ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 
 COPY run.sh .
-COPY setup.py .
+COPY main.py .
 
 # Our work starts here
 # Setting demo.py as the default command
