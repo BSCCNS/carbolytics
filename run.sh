@@ -1,7 +1,9 @@
 brows=N_BROWSERS
 
 echo "Fetching data from tranco-list.eu ..."
-wget https://tranco-list.eu/download/VJ6N/1000000 -O top1M.csv -q
+wget https://tranco-list.eu/top-1m.csv.zip -O top1M.zip -q
+echo "Unzip file ..."
+unzip top1M.zip
 
 echo "Launching crawler..."
 python3 main.py
