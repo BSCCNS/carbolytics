@@ -37,6 +37,7 @@ ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 
 COPY run.sh .
 COPY main.py .
+ENV N_WEBS=1000
 
 # Our work starts here
 # Setting demo.py as the default command

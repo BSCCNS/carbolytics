@@ -32,6 +32,8 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
         # JS Web API calls
         browser.js_instrument = True
 
+        browser.profile_archive_dir = Path(data_dir)
+
     # Config validation
     validate_crawl_configs(manager_params, browser_params)
 
