@@ -29,6 +29,7 @@ ENV PATH $HOME/miniconda/bin:$PATH
 
 RUN ./install.sh
 ENV PATH $HOME/miniconda/envs/openwpm/bin:$PATH
+RUN conda install pip && pip install tranco
 
 # Move the firefox binary away from the /opt/OpenWPM root so that it is available if
 # we mount a local source code directory as /opt/OpenWPM
@@ -37,7 +38,10 @@ ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 
 COPY run.sh .
 COPY main.py .
+COPY webs.py .
 ENV N_WEBS=1000
+ENV DATE='today'
+ENV N_JOBS=15
 
 # Our work starts here
 # Setting demo.py as the default command
