@@ -1,14 +1,14 @@
+from concurrent.futures import thread
 from typing import Tuple, List
 from pathlib import Path
 import os
 
 # Due to OpenWPM implementation, has to be copied to it's dir
-from openwpm.config import BrowserParams, ManagerParams, validate_crawl_configs
+from openwpm.config import BrowserParams, ManagerParams, validate_crawl_configs, validate_browser_params
 from openwpm.storage.sql_provider import SQLiteStorageProvider
 from openwpm.task_manager import TaskManager
 from openwpm.command_sequence import CommandSequence
 from openwpm.commands.browser_commands import GetCommand
-
 from webs import get_list
 
 
@@ -16,15 +16,16 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
 
     # Crawler configuration
     manager_params = ManagerParams(num_browsers=threads)
+
     browser_params = [BrowserParams(
-        bot_mitigation=True, display_mode='headless', tp_cookies=tp) for _ in range(threads)
+        bot_mitigation=True, display_mode='headless', tp_cookies=tp, donottrack=True) for _ in range(threads)
     ]
 
     # Data to save
     for browser in browser_params:
         # HTTP Requests & Respostes
         browser.cookie_instrument = True
-        # HTTP cookie changes ??
+        # HTTP cookie changes ??""
         browser.cookie_instrument = True
         # WebRequests callstack
         browser.callstack_instrument = True
@@ -33,9 +34,13 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
         # JS Web API calls
         browser.js_instrument = True
 
+        # Accept cookies
+        browser.tp_cookies = "always"
+
         browser.profile_archive_dir = Path(data_dir)
 
     # Config validation
+    [validate_browser_params(p) for p in browser_params]
     validate_crawl_configs(manager_params, browser_params)
 
     manager_params.data_directory = Path(data_dir)
@@ -62,7 +67,7 @@ def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParam
         for index, site in enumerate(sites):
             def callback(success: bool, val: str = site) -> None:
                 print(
-                    f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
+                    f"[{index}] CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
 
             command_seq = CommandSequence(
                 site, site_rank=index, callback=callback)

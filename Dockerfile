@@ -39,6 +39,7 @@ ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 COPY run.sh .
 COPY main.py .
 COPY webs.py .
+
 ENV N_WEBS=1000
 ENV DATE='today'
 ENV N_JOBS=15
