@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add: 
+      - NET_ADMIN
+    network_mode: bridge
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8000:8000/tcp # Built-in HTTP control server
+    environment:
+      # Sensitive variables are hidden
+      VPNSP: protonvpn
+      OPENVPN_USER: "SBtkYju712YB2KHE"
+      OPENVPN_PASSWORD: 8dK71cTgWNfTU7Ol1uFiPLjyhH66p0XD
+
+      # Regular variables
+      FREE_ONLY: "yes"
+      SERVER_NAME: "US-FREE#3"
+      TZ: "Europe"
+    restart: always
+  
+  carbolytics:
+    build: .
+    container_name: carbolytics
+    network_mode: service:gluetun
+    environment: 
+      DATE: "2021-01-01"
+      N_WEBS: 10
+      N_BROWSERS: 1
+    volumes: 
+      - type: bind
+        source: ./data
+        target: /opt/data
