@@ -5,6 +5,7 @@
 
 # head -n $N_WEBS top-1m.csv >top1M.csv
 
+sleep 1m
 echo "Launching crawler..."
 python3 main.py
 
