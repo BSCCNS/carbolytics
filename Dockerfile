@@ -40,10 +40,6 @@ COPY run.sh .
 COPY main.py .
 COPY webs.py .
 
-ENV N_WEBS=1000
-ENV DATE='today'
-ENV N_BROWSERS=15
-
 # Our work starts here
 # Setting demo.py as the default command
 CMD [ "bash", "run.sh" ]
