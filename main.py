@@ -37,14 +37,9 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
         # Accept cookies
         browser.tp_cookies = "always"
 
-        browser.profile_archive_dir = Path(data_dir)
-
     # Config validation
     [validate_browser_params(p) for p in browser_params]
     validate_crawl_configs(manager_params, browser_params)
-
-    manager_params.data_directory = Path(data_dir)
-    manager_params.log_path = Path(data_dir + 'openwpm.log')
 
     # Watchdogs used for large scale crawler
     manager_params.memory_watchdog = True
@@ -66,7 +61,7 @@ def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParam
 
         for index, site in enumerate(sites):
             def callback(success: bool, val: str = site) -> None:
-                print(
+                print(  # Concurrency goes BRRRRR
                     f"[{index}] CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
 
             command_seq = CommandSequence(

@@ -1,12 +1,10 @@
-# echo "Fetching data from tranco-list.eu ..."
-# wget https://tranco-list.eu/top-1m.csv.zip -O top1M.zip -q
-# echo "Unzip file ..."
-# unzip top1M.zip
-
-# head -n $N_WEBS top-1m.csv >top1M.csv
-
 sleep 1m
 echo "Launching crawler..."
 python3 main.py
+
+cd ~/data
+
+bash ~/OpenWPM/exportSQLite.sh crawl-data.sqlite
+rm crawl-data.sqlite
 
 echo "DONE..."
