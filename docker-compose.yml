@@ -29,10 +29,10 @@ services:
     container_name: carbolytics
     network_mode: service:gluetun
     environment: 
-      DATE: "2021-01-01"
-      N_WEBS: 10
-      N_BROWSERS: 1
+      DATE: "2021-09-01"
+      N_WEBS: 5000
+      N_BROWSERS: 15
     volumes: 
       - type: bind
-        source: ./data
+        source: ./data5K
         target: /opt/data

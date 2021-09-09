@@ -23,18 +23,11 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
 
     # Data to save
     for browser in browser_params:
-        # HTTP Requests & Respostes
         browser.cookie_instrument = True
-        # HTTP cookie changes ??""
-        browser.cookie_instrument = True
-        # WebRequests callstack
-        browser.callstack_instrument = True
-        # DNS resolution
+        browser.navigation_instrument = True
         browser.dns_instrument = True
-        # JS Web API calls
-        browser.js_instrument = True
 
-        # Accept cookies
+       # Accept cookies
         browser.tp_cookies = "always"
 
     # Config validation
