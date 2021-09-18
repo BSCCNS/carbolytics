@@ -1,12 +1,12 @@
 version: "3.7"
 
-services:
+services:  
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
     cap_add: 
       - NET_ADMIN
-    network_mode: bridge
+    network_mode: carbolytics
     ports:
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
@@ -15,24 +15,40 @@ services:
     environment:
       # Sensitive variables are hidden
       VPNSP: protonvpn
-      OPENVPN_USER: "SBtkYju712YB2KHE"
-      OPENVPN_PASSWORD: 8dK71cTgWNfTU7Ol1uFiPLjyhH66p0XD
-
+      OPENVPN_USER: GAQ1jBMYRN6dVa7w
+      OPENVPN_PASSWORD: 8VjI0VSr83zA33AyyaFImJx6KYs2oJla
       # Regular variables
       FREE_ONLY: "yes"
-      SERVER_NAME: "US-FREE#3"
+      SERVER_NAME: "US-FREE#1"
       TZ: "Europe"
     restart: always
-  
+
   carbolytics:
     build: .
-    container_name: carbolytics
+    container_name: crawl
     network_mode: service:gluetun
     environment: 
       DATE: "2021-09-01"
-      N_WEBS: 5000
-      N_BROWSERS: 15
+      N_WEBS: 2
+      N_BROWSERS: 1
     volumes: 
       - type: bind
         source: ./data5K
         target: /opt/data
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  database:
+    image: postgres
+    container_name: carbolytics_db
+    network_mode: service:gluetun
+    restart: always
+    environment:
+      POSTGRES_USER: data
+      POSTGRES_PASSWORD: dataviz
+      POSTGRES_DB: carbolytics
+    volumes: 
+      - type: bind
+        source: ./sql/tables.sql
+        target: /docker-entrypoint-initdb.d/tables.sql

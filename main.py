@@ -1,7 +1,9 @@
 from concurrent.futures import thread
+from copy import copy
 from typing import Tuple, List
 from pathlib import Path
 import os
+from insert import set_connection_psql, get_tables
 
 # Due to OpenWPM implementation, has to be copied to it's dir
 from openwpm.config import BrowserParams, ManagerParams, validate_crawl_configs, validate_browser_params
@@ -44,13 +46,10 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
     return manager_params, browser_params
 
 
-def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParams], date: str = 'today', n_webs: int = 1000):
-
-    # Get websites to crawler from file
-    sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
+def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParams], sites: List[str], index: int):
 
     # Set up tasks
-    with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path("../data/crawl-data.sqlite")), None) as manager:
+    with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path(f"../data/crawl-data.sqlite")), None) as manager:
 
         for index, site in enumerate(sites):
             def callback(success: bool, val: str = site) -> None:
@@ -72,9 +71,35 @@ if __name__ == "__main__":
     jobs = os.getenv("N_BROWSERS")
     date = os.getenv("DATE")
     n_webs = int(os.getenv("N_WEBS"))
-    print(f"Running with {jobs} browser(s) over {n_webs} web(s)")
-    manager_params, browser_params = configure_crawl(
-        threads=int(jobs))
 
-    run_crawler(manager_params=manager_params,
-                browser_params=browser_params, date=date, n_webs=n_webs)
+    # PostgreSQL
+    connection = set_connection_psql()
+
+    print("Fetching data...")
+    sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
+
+    splits = [sites[x:x+10] for x in range(0, len(sites), 10)]
+
+    print(
+        f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")
+
+    for index, split in enumerate(splits):
+
+        print("Starting batch...")
+
+        manager_params, browser_params = configure_crawl(
+            threads=int(jobs))
+
+        run_crawler(manager_params=manager_params,
+                    browser_params=browser_params, sites=split, index=index)
+
+        # SQLite dump for consolidation on Storage
+        # get_table_sqlite('task', connection)
+        # get_table_sqlite('crawl', connection)
+        # get_table_sqlite('site_visits', connection)
+        # get_table_sqlite('dns_responses', connection)
+        # get_table_sqlite('javascript_cookies', connection)
+
+        get_tables(connection)
+
+        print("DONE")

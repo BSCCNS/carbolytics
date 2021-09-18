@@ -12,9 +12,7 @@ RUN apt-get clean -qq \
     && apt-get update -qq \
     && apt-get upgrade -qq \
     # git and make for `npm install`, wget for `install-miniconda`
-    && apt-get install wget git make -qq \
-    # deps to run firefox inc. with xvfb
-    && apt-get install libgtk-3-0 libx11-xcb1 libdbus-glib-1-2 libxt6 xvfb -y -qq \
+    && apt-get install wget git make -qq libgtk-3-0 libx11-xcb1 libdbus-glib-1-2 libxt6 xvfb postgresql-client -y -qq \
     && rm -r /var/lib/apt/lists/* -vf
 
 ENV HOME /opt
@@ -28,7 +26,7 @@ ENV PATH $HOME/miniconda/bin:$PATH
 
 RUN ./install.sh
 ENV PATH $HOME/miniconda/envs/openwpm/bin:$PATH
-RUN conda install pip && pip install tranco
+RUN conda install pip pandas -y && pip3 install tranco psycopg2-binary SQLAlchemy
 
 # Move the firefox binary away from the /opt/OpenWPM root so that it is available if
 # we mount a local source code directory as /opt/OpenWPM
@@ -39,8 +37,10 @@ COPY run.sh .
 COPY main.py .
 COPY webs.py .
 
-COPY exportSQLite.sh .
+COPY sql/insert.py .
 
 # Our work starts here
 # Setting demo.py as the default command
 CMD [ "bash", "run.sh" ]
+
+# TODO Create volumen on SSD for /opt/data
