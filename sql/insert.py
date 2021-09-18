@@ -8,18 +8,18 @@ def set_connection_psql():
 
 
 def get_tables(conn):
-    con = sqlite3.connect("../data/crawl-data.sqlite")
+    data = sqlite3.connect("../data/crawl-data.sqlite")
 
     # Task table
-    pd.read_sql_query("SELECT * FROM task", con).to_sql(name='task',
+    pd.read_sql_query("SELECT * FROM task", data).to_sql(name='task',
                                                         con=conn, if_exists='append', index=False)
 
     # Crawl table
-    pd.read_sql_query("SELECT * FROM crawl", con).to_sql(name='crawl',
+    pd.read_sql_query("SELECT * FROM crawl", data).to_sql(name='crawl',
                                                          con=conn, if_exists='append', index=False)
 
     # Javascript_cookies table
-    cookies = pd.read_sql_query("SELECT * FROM javascript_cookies", con)
+    cookies = pd.read_sql_query("SELECT * FROM javascript_cookies", data)
 
     cookies[['is_http_only', 'is_host_only', 'is_session', 'is_secure']] = cookies[[
         'is_http_only', 'is_host_only', 'is_session', 'is_secure']].astype('bool')
@@ -28,9 +28,9 @@ def get_tables(conn):
                    if_exists='append', index=False)
 
     # DNS_respones table
-    pd.read_sql_query("SELECT * FROM dns_responses", con).drop('is_TRR', axis=1).to_sql(
+    pd.read_sql_query("SELECT * FROM dns_responses", data).drop('is_TRR', axis=1).to_sql(
         name='dns_responses', con=conn, if_exists='append', index=False)
 
     # Site_visits table
-    pd.read_sql_query("SELECT * FROM site_visits", con).to_sql(
-        name='site_vists', con=conn, if_exists='append', index=False)
+    pd.read_sql_query("SELECT * FROM site_visits", data).to_sql(
+        name='site_visits', con=conn, if_exists='append', index=False)

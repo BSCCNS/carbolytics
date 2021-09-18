@@ -29,15 +29,21 @@ services:
     network_mode: service:gluetun
     environment: 
       DATE: "2021-09-01"
-      N_WEBS: 2
-      N_BROWSERS: 1
+      N_WEBS: 1000000
+      N_BROWSERS: 50
     volumes: 
-      - type: bind
-        source: ./data
+      - type: volume
+        source: temp
         target: /opt/data
     depends_on:
       gluetun:
         condition: service_healthy
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '15'
+          memory: 75GB
 
   database:
     image: postgres
@@ -48,7 +54,28 @@ services:
       POSTGRES_USER: data
       POSTGRES_PASSWORD: dataviz
       POSTGRES_DB: carbolytics
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes: 
       - type: bind
         source: ./sql/tables.sql
         target: /docker-entrypoint-initdb.d/tables.sql
+      - type: volume
+        source: data
+        target: /var/lib/postgresql/data
+
+volumes: 
+  data:
+    driver: local
+    name: carbolytics_db
+    driver_opts: 
+      type: none
+      o: bind
+      device: /media/HDD/carbolytics
+
+  temp:
+    driver: local
+    name: carbolytics_temp
+    driver_opts: 
+      type: none
+      o: bind
+      device: /media/M2/stebf/carbolytics

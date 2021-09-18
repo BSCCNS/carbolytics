@@ -51,10 +51,10 @@ def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParam
     # Set up tasks
     with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path(f"../data/crawl-data.sqlite")), None) as manager:
 
-        for index, site in enumerate(sites):
+        for site in sites:
             def callback(success: bool, val: str = site) -> None:
                 print(  # Concurrency goes BRRRRR
-                    f"[{index}] CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
+                    f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
 
             command_seq = CommandSequence(
                 site, site_rank=index, callback=callback)
@@ -78,14 +78,14 @@ if __name__ == "__main__":
     print("Fetching data...")
     sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
 
-    splits = [sites[x:x+10] for x in range(0, len(sites), 10)]
+    splits = [sites[x:x+7500] for x in range(0, len(sites), 7500)]
 
     print(
         f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")
 
     for index, split in enumerate(splits):
 
-        print("Starting batch...")
+        print(f"\n\n\nStarting batch {index}...\n\n\n")
 
         manager_params, browser_params = configure_crawl(
             threads=int(jobs))
@@ -93,13 +93,6 @@ if __name__ == "__main__":
         run_crawler(manager_params=manager_params,
                     browser_params=browser_params, sites=split, index=index)
 
-        # SQLite dump for consolidation on Storage
-        # get_table_sqlite('task', connection)
-        # get_table_sqlite('crawl', connection)
-        # get_table_sqlite('site_visits', connection)
-        # get_table_sqlite('dns_responses', connection)
-        # get_table_sqlite('javascript_cookies', connection)
-
         get_tables(connection)
 
-        print("DONE")
+        print("DONE\n\n\n\n\n")
