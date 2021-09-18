@@ -33,7 +33,7 @@ services:
       N_BROWSERS: 1
     volumes: 
       - type: bind
-        source: ./data5K
+        source: ./data
         target: /opt/data
     depends_on:
       gluetun:

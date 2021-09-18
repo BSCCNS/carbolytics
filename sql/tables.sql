@@ -7,16 +7,16 @@ CREATE TABLE task (
 );
 
 CREATE TABLE crawl (
-    browser_id BIGSERIAL PRIMARY KEY,
+    browser_id BIGINT PRIMARY KEY,
     task_id BIGSERIAL,
     browser_params TEXT,
     start_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE dns_responses (
-    id BIGSERIAL PRIMARY KEY,
-    request_id BIGSERIAL,
-    browser_id BIGSERIAL,
+    id SERIAL PRIMARY KEY,
+    request_id BIGINT,
+    browser_id BIGINT,
     visit_id BIGINT,
     hostname TEXT,
     addresses TEXT,
@@ -26,19 +26,19 @@ CREATE TABLE dns_responses (
 );
 
 CREATE TABLE javascript_cookies (
-    id BIGSERIAL PRIMARY KEY,
-    browser_id BIGSERIAL,
-    visit_id BIGSERIAL,
+    id SERIAL PRIMARY KEY,
+    browser_id BIGINT,
+    visit_id BIGINT,
     extension_session_uuid TEXT,
     event_ordinal SERIAL,
     record_type TEXT,
     change_cause TEXT,
     expiry TIMESTAMPTZ,
-    is_http_only SMALLINT,
-    is_host_only SMALLINT,
-    is_session SMALLINT,
+    is_http_only BOOLEAN,
+    is_host_only BOOLEAN,
+    is_session BOOLEAN,
     host TEXT,
-    is_secure SMALLINT,
+    is_secure BOOLEAN,
     name TEXT,
     path TEXT,
     value TEXT,
@@ -49,8 +49,8 @@ CREATE TABLE javascript_cookies (
 );
 
 CREATE TABLE site_visits (
-    visit_id BIGSERIAL PRIMARY KEY,
-    browser_id BIGSERIAL,
+    visit_id BIGINT PRIMARY KEY,
+    browser_id BIGINT,
     site_url TEXT,
     site_rank BIGINT
 );
