@@ -3,6 +3,7 @@ from copy import copy
 from typing import Tuple, List
 from pathlib import Path
 import os
+import random
 from insert import set_connection_psql, get_tables
 
 # Due to OpenWPM implementation, has to be copied to it's dir
@@ -86,6 +87,7 @@ if __name__ == "__main__":
     for index, split in enumerate(splits):
 
         print(f"\n\n\nStarting batch {index}...\n\n\n")
+        random.seed(index)
 
         manager_params, browser_params = configure_crawl(
             threads=int(jobs))
