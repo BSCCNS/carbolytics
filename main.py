@@ -79,7 +79,7 @@ if __name__ == "__main__":
     print("Fetching data...")
     sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
 
-    splits = [sites[x:x+7500] for x in range(0, len(sites), 7500)]
+    splits = [sites[x:x+500] for x in range(0, len(sites), 500)]
 
     print(
         f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")

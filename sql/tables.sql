@@ -1,18 +1,3 @@
-CREATE TABLE task (
-    task_id BIGSERIAL PRIMARY KEY,
-    start_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    manager_params TEXT,
-    openwpm_version TEXT,
-    browser_version TEXT
-);
-
-CREATE TABLE crawl (
-    browser_id BIGINT PRIMARY KEY,
-    task_id BIGSERIAL,
-    browser_params TEXT,
-    start_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE dns_responses (
     id SERIAL PRIMARY KEY,
     request_id BIGINT,
@@ -54,13 +39,3 @@ CREATE TABLE site_visits (
     site_url TEXT,
     site_rank BIGINT
 );
-
-ALTER TABLE crawl
-    ADD constraint FK_task_id_task
-    FOREIGN KEY (task_id)
-    REFERENCES task(task_id);
-
-ALTER TABLE site_visits
-    ADD constraint FK_browser_id_crawl
-    FOREIGN KEY (browser_id)
-    REFERENCES crawl(browser_id);
