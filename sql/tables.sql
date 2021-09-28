@@ -1,5 +1,4 @@
 CREATE TABLE dns_responses (
-    id SERIAL PRIMARY KEY,
     request_id BIGINT,
     browser_id BIGINT,
     visit_id BIGINT,
@@ -11,11 +10,9 @@ CREATE TABLE dns_responses (
 );
 
 CREATE TABLE javascript_cookies (
-    id SERIAL PRIMARY KEY,
     browser_id BIGINT,
     visit_id BIGINT,
     extension_session_uuid TEXT,
-    event_ordinal SERIAL,
     record_type TEXT,
     change_cause TEXT,
     expiry TIMESTAMPTZ,
@@ -34,8 +31,7 @@ CREATE TABLE javascript_cookies (
 );
 
 CREATE TABLE site_visits (
-    visit_id BIGINT PRIMARY KEY,
+    visit_id BIGINT,
     browser_id BIGINT,
-    site_url TEXT,
-    site_rank BIGINT
+    site_url TEXT
 );

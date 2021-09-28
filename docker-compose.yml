@@ -15,8 +15,8 @@ services:
     environment:
       # Sensitive variables are hidden
       VPNSP: protonvpn
-      OPENVPN_USER: GAQ1jBMYRN6dVa7w
-      OPENVPN_PASSWORD: 8VjI0VSr83zA33AyyaFImJx6KYs2oJla
+      OPENVPN_USER: 5U5BiwzSLvHgAeRp
+      OPENVPN_PASSWORD: pepd5AyIuxCdZsxa7rsIn5A427B4nsIb
       # Regular variables
       FREE_ONLY: "yes"
       SERVER_NAME: "US-FREE#1"

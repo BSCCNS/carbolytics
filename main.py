@@ -72,6 +72,7 @@ if __name__ == "__main__":
     jobs = os.getenv("N_BROWSERS")
     date = os.getenv("DATE")
     n_webs = int(os.getenv("N_WEBS"))
+    used = 0
 
     # PostgreSQL
     connection = set_connection_psql()
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     print("Fetching data...")
     sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
 
-    splits = [sites[x:x+500] for x in range(0, len(sites), 500)]
+    splits = [sites[x:x+5000] for x in range(0, len(sites), 5000)]
 
     print(
         f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")
@@ -87,7 +88,6 @@ if __name__ == "__main__":
     for index, split in enumerate(splits):
 
         print(f"\n\n\nStarting batch {index}...\n\n\n")
-        random.seed(index)
 
         manager_params, browser_params = configure_crawl(
             threads=int(jobs))
@@ -95,6 +95,8 @@ if __name__ == "__main__":
         run_crawler(manager_params=manager_params,
                     browser_params=browser_params, sites=split, index=index)
 
-        get_tables(connection)
+        used = get_tables(connection, used)
+
+        
 
         print("DONE\n\n\n\n\n")
