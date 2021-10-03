@@ -52,3 +52,16 @@ def get_tables(conn, used: int):
         name='site_visits', con=conn, if_exists='append', index=False)
 
     return used
+
+
+def last_site():
+
+    conn = create_engine(
+        "postgresql://data:dataviz@localhost:5432/carbolytics"
+    )
+
+    webs = pd.read_sql_query("SELECT site_url FROM site_visits", conn)
+
+    webs['site_url'] = webs['site_url'].map(lambda x: x.lstrip('https://'))
+
+    return set(webs['site_url'].unique())

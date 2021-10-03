@@ -32,8 +32,8 @@ services:
       N_WEBS: 1000000
       N_BROWSERS: 50
     volumes: 
-      - type: volume
-        source: temp
+      - type: bind
+        source: /media/M2/stebf/carbolytics
         target: /opt/data
     depends_on:
       gluetun:
@@ -58,23 +58,6 @@ services:
       - type: bind
         source: ./sql/tables.sql
         target: /docker-entrypoint-initdb.d/tables.sql
-      - type: volume
-        source: data
+      - type: bind
+        source: /media/HDD/carbolytics
         target: /var/lib/postgresql/data
-
-volumes: 
-  data:
-    driver: local
-    name: carbolytics_db
-    driver_opts: 
-      type: none
-      o: bind
-      device: /media/HDD/carbolytics
-
-  temp:
-    driver: local
-    name: carbolytics_temp
-    driver_opts: 
-      type: none
-      o: bind
-      device: /media/M2/stebf/carbolytics

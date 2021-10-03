@@ -4,7 +4,7 @@ from typing import Tuple, List
 from pathlib import Path
 import os
 import random
-from insert import set_connection_psql, get_tables
+from insert import set_connection_psql, get_tables, last_site
 
 # Due to OpenWPM implementation, has to be copied to it's dir
 from openwpm.config import BrowserParams, ManagerParams, validate_crawl_configs, validate_browser_params
@@ -50,7 +50,7 @@ def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../da
 def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParams], sites: List[str], index: int):
 
     # Set up tasks
-    with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path(f"../data/crawl-data.sqlite")), None) as manager:
+    with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path("../data/crawl-data.sqlite")), None) as manager:
 
         for site in sites:
             def callback(success: bool, val: str = site) -> None:
@@ -78,9 +78,12 @@ if __name__ == "__main__":
     connection = set_connection_psql()
 
     print("Fetching data...")
-    sites = ["https://" + x for x in get_list(date=date, webs=n_webs)]
+    visited = last_site()
+    sites = ["https://" +
+             x for x in get_list(date=date, webs=n_webs) if x not in visited
+             ]
 
-    splits = [sites[x:x+5000] for x in range(0, len(sites), 5000)]
+    splits = [sites[x:x+7500] for x in range(0, len(sites), 7500)]
 
     print(
         f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")
@@ -96,7 +99,6 @@ if __name__ == "__main__":
                     browser_params=browser_params, sites=split, index=index)
 
         used = get_tables(connection, used)
-
-        
+        os.remove("../data/crawl-data.sqlite")
 
         print("DONE\n\n\n\n\n")
