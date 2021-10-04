@@ -86,7 +86,7 @@ if __name__ == "__main__":
     splits = [sites[x:x+7500] for x in range(0, len(sites), 7500)]
 
     print(
-        f"Running with {jobs} browser(s) over {n_webs} web(s) [{len(splits)} batch(es)]")
+        f"Running with {jobs} browser(s) over {len(sites)} web(s) [{len(splits)} batch(es)]")
 
     for index, split in enumerate(splits):
 
