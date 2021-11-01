@@ -1,7 +1,10 @@
+CREATE TABLE site_visits (
+    visit_id SERIAL PRIMARY KEY NOT NULL,
+    site_url TEXT
+);
+
 CREATE TABLE dns_responses (
-    request_id BIGINT,
-    browser_id BIGINT,
-    visit_id BIGINT,
+    visit_id SERIAL REFERENCES site_visits (visit_id),
     hostname TEXT,
     addresses TEXT,
     used_address TEXT,
@@ -10,9 +13,7 @@ CREATE TABLE dns_responses (
 );
 
 CREATE TABLE javascript_cookies (
-    browser_id BIGINT,
-    visit_id BIGINT,
-    extension_session_uuid TEXT,
+    visit_id SERIAL REFERENCES site_visits (visit_id),
     record_type TEXT,
     change_cause TEXT,
     expiry TIMESTAMPTZ,
@@ -26,12 +27,5 @@ CREATE TABLE javascript_cookies (
     value TEXT,
     same_site TEXT,
     first_party_domain TEXT,
-    store_id TEXT,
     time_stamp TIMESTAMPTZ
-);
-
-CREATE TABLE site_visits (
-    visit_id BIGINT,
-    browser_id BIGINT,
-    site_url TEXT
 );

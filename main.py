@@ -1,9 +1,7 @@
-from concurrent.futures import thread
-from copy import copy
 from typing import Tuple, List
 from pathlib import Path
 import os
-import random
+import gc
 from insert import set_connection_psql, get_tables, last_site
 
 # Due to OpenWPM implementation, has to be copied to it's dir
@@ -12,7 +10,7 @@ from openwpm.storage.sql_provider import SQLiteStorageProvider
 from openwpm.task_manager import TaskManager
 from openwpm.command_sequence import CommandSequence
 from openwpm.commands.browser_commands import GetCommand
-from webs import get_list
+from webs import get_list, read_list
 
 
 def configure_crawl(threads: int = 5, tp: str = 'always', data_dir: str = '../data/') -> Tuple[ManagerParams, List[BrowserParams]]:
@@ -52,11 +50,11 @@ def run_crawler(manager_params: ManagerParams, browser_params: List[BrowserParam
     # Set up tasks
     with TaskManager(manager_params, browser_params, SQLiteStorageProvider(Path("../data/crawl-data.sqlite")), None) as manager:
 
-        for site in sites:
-            def callback(success: bool, val: str = site) -> None:
-                print(  # Concurrency goes BRRRRR
-                    f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
+        def callback(success: bool, val: str = "") -> None:
+            print(  # Concurrency goes BRRRRR
+                f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}")
 
+        for site in sites:
             command_seq = CommandSequence(
                 site, site_rank=index, callback=callback)
 
@@ -72,18 +70,20 @@ if __name__ == "__main__":
     jobs = os.getenv("N_BROWSERS")
     date = os.getenv("DATE")
     n_webs = int(os.getenv("N_WEBS"))
-    used = 0
-
-    # PostgreSQL
-    connection = set_connection_psql()
 
     print("Fetching data...")
-    visited = last_site()
+    visited, used = last_site()
+    # sites = ["https://" +
+    #          x for x in get_list(date=date, webs=n_webs) if x not in visited
+    #          ]
+
     sites = ["https://" +
-             x for x in get_list(date=date, webs=n_webs) if x not in visited
+             x for x in read_list('top-1m.csv') if x not in visited
              ]
 
-    splits = [sites[x:x+7500] for x in range(0, len(sites), 7500)]
+    print(sites[0])
+
+    splits = [sites[x:x+2000] for x in range(0, len(sites), 2000)]
 
     print(
         f"Running with {jobs} browser(s) over {len(sites)} web(s) [{len(splits)} batch(es)]")
@@ -98,7 +98,14 @@ if __name__ == "__main__":
         run_crawler(manager_params=manager_params,
                     browser_params=browser_params, sites=split, index=index)
 
+        connection = set_connection_psql()
+
         used = get_tables(connection, used)
+
+        connection.dispose()
+
         os.remove("../data/crawl-data.sqlite")
+        del manager_params, browser_params, connection
+        gc.collect()
 
         print("DONE\n\n\n\n\n")

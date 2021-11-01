@@ -12,6 +12,7 @@ services:
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       - 8000:8000/tcp # Built-in HTTP control server
+      - 9001:5432/tcp
     environment:
       # Sensitive variables are hidden
       VPNSP: protonvpn
@@ -22,7 +23,10 @@ services:
       SERVER_NAME: "US-FREE#1"
       TZ: "Europe"
     restart: always
-
+    deploy:
+        resources:
+            limits:
+                memory: 10000M
   carbolytics:
     build: .
     container_name: crawl
@@ -30,7 +34,7 @@ services:
     environment: 
       DATE: "2021-09-01"
       N_WEBS: 1000000
-      N_BROWSERS: 50
+      N_BROWSERS: 25
     volumes: 
       - type: bind
         source: /media/M2/stebf/carbolytics
@@ -42,10 +46,10 @@ services:
       resources:
         limits:
           cpus: '15'
-          memory: 75GB
+          memory: 50000M
 
   database:
-    image: postgres
+    image: postgres:13.4
     container_name: carbolytics_db
     network_mode: service:gluetun
     restart: always

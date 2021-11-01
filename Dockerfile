@@ -36,6 +36,7 @@ ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 COPY run.sh .
 COPY main.py .
 COPY webs.py .
+COPY top-1m.csv .
 
 COPY sql/insert.py .
 

@@ -2,3 +2,6 @@ data*/
 OpenWPM/
 .dockerignore
 .vscode/
+*.log
+log_exec.sh
+*.csv

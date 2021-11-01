@@ -5,7 +5,8 @@ from sqlalchemy import create_engine
 
 
 def set_connection_psql():
-    return create_engine("postgresql://data:dataviz@localhost:5432/carbolytics")
+    return create_engine("postgresql://data:dataviz@localhost:5432/carbolytics",
+                         execution_options={"isolation_level": "AUTOCOMMIT"})
 
 
 def get_tables(conn, used: int):
@@ -26,6 +27,12 @@ def get_tables(conn, used: int):
         index[ids] = used + 1
         used += 1
 
+    # Site_visits table
+    sites['visit_id'] = sites['visit_id'].map(index)
+
+    sites.drop(columns=['site_rank', 'browser_id']).to_sql(
+        name='site_visits', con=conn, if_exists='append', index=False)
+
     # Javascript_cookies table
     cookies[['is_http_only', 'is_host_only', 'is_session', 'is_secure']] = cookies[[
         'is_http_only', 'is_host_only', 'is_session', 'is_secure']].astype('bool')
@@ -36,20 +43,16 @@ def get_tables(conn, used: int):
 
     cookies['visit_id'] = cookies['visit_id'].map(index)
 
-    cookies.drop(columns=['id', 'event_ordinal'], axis=1).to_sql(name='javascript_cookies', con=conn,
-                                                                 if_exists='append', index=False)
+    cookies.drop(columns=['id', 'event_ordinal', 'browser_id', 'extension_session_uuid', 'store_id'], axis=1).to_sql(
+        name='javascript_cookies', con=conn, if_exists='append', index=False)
 
     # DNS_respones table
     dns['visit_id'] = dns['visit_id'].map(index)
 
-    dns.drop(['is_TRR', 'id'], axis=1).to_sql(name='dns_responses',
-                                              con=conn, if_exists='append', index=False)
+    dns.drop(['is_TRR', 'id', 'browser_id', 'request_id'], axis=1).to_sql(name='dns_responses',
+                                                                          con=conn, if_exists='append', index=False)
 
-    # Site_visits table
-    sites['visit_id'] = sites['visit_id'].map(index)
-
-    sites.drop(columns=['site_rank']).to_sql(
-        name='site_visits', con=conn, if_exists='append', index=False)
+    data.close()
 
     return used
 
@@ -60,8 +63,11 @@ def last_site():
         "postgresql://data:dataviz@localhost:5432/carbolytics"
     )
 
-    webs = pd.read_sql_query("SELECT site_url FROM site_visits", conn)
+    webs = pd.read_sql_query(
+        "SELECT site_url, visit_id FROM site_visits", conn)
 
     webs['site_url'] = webs['site_url'].map(lambda x: x.lstrip('https://'))
 
-    return set(webs['site_url'].unique())
+    conn.dispose()
+
+    return set(webs['site_url'].unique()), max(webs['visit_id'], default=0)
