@@ -6,3 +6,6 @@ secrets/
 *.log
 log_exec.sh
 *.csv
+.DS_Store
+.idea/
+.vscode/
