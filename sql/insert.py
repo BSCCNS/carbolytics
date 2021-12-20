@@ -66,8 +66,6 @@ def last_site():
     webs = pd.read_sql_query(
         "SELECT site_url, visit_id FROM site_visits", conn)
 
-    webs['site_url'] = webs['site_url'].map(lambda x: x.lstrip('https://'))
-
     conn.dispose()
 
     return set(webs['site_url'].unique()), max(webs['visit_id'], default=0)
