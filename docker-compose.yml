@@ -1,52 +1,52 @@
 version: "3.7"
 
-services:  
+services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
-    cap_add: 
+    cap_add:
       - NET_ADMIN
-    network_mode: carbolytics
+    network_mode: bridge
     ports:
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       - 8000:8000/tcp # Built-in HTTP control server
-      - 9001:5432/tcp
+      - 9001:5432/tcp # Postgres port forwarding
     environment:
       # Sensitive variables are hidden
-      VPNSP: protonvpn
+      VPNSP: ${VPN}
       OPENVPN_USER: 5U5BiwzSLvHgAeRp
       OPENVPN_PASSWORD: pepd5AyIuxCdZsxa7rsIn5A427B4nsIb
       # Regular variables
-      FREE_ONLY: "yes"
-      SERVER_NAME: "US-FREE#1"
-      TZ: "Europe"
+      FREE_ONLY: ${FREE}
+      SERVER_NAME: ${SERVER}
+      TZ: ${TZ}
     restart: always
     deploy:
-        resources:
-            limits:
-                memory: 10000M
+      resources:
+        limits:
+          memory: 10000M
   carbolytics:
     build: .
     container_name: crawl
     network_mode: service:gluetun
-    environment: 
-      DATE: "2021-09-01"
-      N_WEBS: 1000000
-      N_BROWSERS: 25
-    volumes: 
-      - type: bind
-        source: /media/M2/stebf/carbolytics
-        target: /opt/data
+    environment:
+      DATE: ${DATE}
+      N_WEBS: ${N_WEBS}
+      N_BROWSERS: ${N_BROWSERS}
+    # volumes:
+    #   - type: bind
+    #     source: <TEMPORAL STORAGE PATH>
+    #     target: /opt/data
     depends_on:
       gluetun:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          cpus: '15'
-          memory: 50000M
+          cpus: ${N_CPUS}
+          memory: ${CAP}
 
   database:
     image: postgres:13.4
@@ -58,10 +58,10 @@ services:
       POSTGRES_PASSWORD: dataviz
       POSTGRES_DB: carbolytics
       PGDATA: /var/lib/postgresql/data/pgdata
-    volumes: 
+    volumes:
       - type: bind
         source: ./sql/tables.sql
         target: /docker-entrypoint-initdb.d/tables.sql
-      - type: bind
-        source: /media/HDD/carbolytics
-        target: /var/lib/postgresql/data
+      # - type: bind
+      #   source: <PERSISTANT STORAGE PATH>
+      #   target: /var/lib/postgresql/data

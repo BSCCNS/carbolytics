@@ -78,7 +78,7 @@ if __name__ == "__main__":
     #          ]
 
     sites = ["https://" +
-             x for x in read_list('top-1m.csv') if x not in visited
+             x for x in get_list(date=date, webs=n_webs) if x not in visited
              ]
 
     print(sites[0])

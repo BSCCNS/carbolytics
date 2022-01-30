@@ -36,12 +36,9 @@ ENV FIREFOX_BINARY /opt/firefox-bin/firefox-bin
 COPY run.sh .
 COPY main.py .
 COPY webs.py .
-COPY top-1m.csv .
 
 COPY sql/insert.py .
 
 # Our work starts here
 # Setting demo.py as the default command
 CMD [ "bash", "run.sh" ]
-
-# TODO Create volumen on SSD for /opt/data
