@@ -62,5 +62,5 @@ CREATE TABLE dns AS
     FROM sites LEFT JOIN dns_responses dr ON sites.visit_id = dr.visit_id;
 
 CREATE TABLE cookies_size AS
-    SELECT DISTINCT host, name, octet_length(CONCAT(name, '=', value)) AS byte_size
+    SELECT DISTINCT host, name, octet_length(CONCAT(name, value)) AS byte_size
     FROM cookies;
