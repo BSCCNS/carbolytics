@@ -1,10 +1,6 @@
 CREATE TABLE site_total AS
-    SELECT visit_id, replace(site_url, 'www.', '') AS site_url
-    FROM (
-        SELECT visit_id, replace(site_url, 'http://', '') AS site_url
-        FROM (
-            SELECT visit_id, replace(site_url, 'https://', '') AS site_url
-            FROM site_visits) a) b
+    SELECT visit_id, REGEXP_REPLACE(site_url, '^\s*(www\.|https?:\/\/www\.|http?:\/\/www\.|http?:\/\/|https?:\/\/)', '') AS site_url
+    FROM site_visits
 
 CREATE TABLE sites AS WITH
     javascript_cookies_table AS (
