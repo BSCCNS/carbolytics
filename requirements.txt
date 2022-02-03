@@ -1,0 +1,4 @@
+pandas==1.3.5
+tranco==0.6
+SQLAlchemy==1.4.22
+psycopg2-binary==2.8.6
