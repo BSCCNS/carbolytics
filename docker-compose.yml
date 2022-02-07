@@ -15,13 +15,13 @@ services:
       - 9001:5432/tcp
     environment:
       # Sensitive variables are hidden
-      VPNSP: protonvpn
-      OPENVPN_USER: 5U5BiwzSLvHgAeRp
-      OPENVPN_PASSWORD: pepd5AyIuxCdZsxa7rsIn5A427B4nsIb
+      VPNSP: ${GLUNETUN_VPNSP}
+      OPENVPN_USER: ${GLUNETUN_OPENVPN_USER}
+      OPENVPN_PASSWORD: ${GLUNETUN_OPENVPN_PASSWORD}
       # Regular variables
-      FREE_ONLY: "yes"
-      SERVER_NAME: "US-FREE#1"
-      TZ: "Europe"
+      FREE_ONLY: ${GLUNETUN_FREE_ONLY}
+      SERVER_NAME: ${GLUNETUN_SERVER_NAME}
+      TZ: ${GLUNETUN_TZ}
     restart: always
     deploy:
         resources:
@@ -32,12 +32,13 @@ services:
     container_name: crawl
     network_mode: service:gluetun
     environment: 
-      DATE: "2021-09-01"
-      N_WEBS: 1000000
-      N_BROWSERS: 25
+      DATE: ${CARBOLYTICS_DATE}
+      N_WEBS: ${CARBOLYTICS_N_WEBS}
+      N_BROWSERS: ${CARBOLYTICS_N_BROWSERS}
+      CRAWL_SITES_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DOCKER_POSTGRES_HOST}:${DOCKER_POSTGRES_PORT}/${POSTGRES_DB}
     volumes: 
       - type: bind
-        source: /media/M2/stebf/carbolytics
+        source: ${DOCKER_CARBOLYTICS_SOURCE_VOLUME}
         target: /opt/data
     depends_on:
       gluetun:
@@ -54,14 +55,14 @@ services:
     network_mode: service:gluetun
     restart: always
     environment:
-      POSTGRES_USER: data
-      POSTGRES_PASSWORD: dataviz
-      POSTGRES_DB: carbolytics
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: ${PGDATA}
     volumes: 
       - type: bind
         source: ./sql/tables.sql
         target: /docker-entrypoint-initdb.d/tables.sql
       - type: bind
-        source: /media/HDD/carbolytics
+        source: ${DOCKER_POSTGRES_SOURCE_VOLUME}
         target: /var/lib/postgresql/data
