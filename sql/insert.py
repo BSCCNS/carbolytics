@@ -1,18 +1,16 @@
-import sqlite3
+import os
 import pandas as pd
-import numpy as np
 from sqlalchemy import create_engine
 
 
 def set_connection_psql():
-    return create_engine("postgresql://data:dataviz@localhost:5432/carbolytics",
-                         execution_options={"isolation_level": "AUTOCOMMIT"})
+    return create_engine(os.getenv("CRAWL_SITES_DATABASE_URL"), execution_options={"isolation_level": "AUTOCOMMIT"})
 
 
 def get_tables(conn, used: int):
 
-    data = sqlite3.connect("../data/crawl-data.sqlite")
-
+    data = create_engine(os.getenv("CRAWL_SITES_DATABASE_URL"))
+    
     dns = pd.read_sql_query("SELECT * FROM dns_responses", data)
     cookies = pd.read_sql_query("SELECT * FROM javascript_cookies", data)
     sites = pd.read_sql_query("SELECT * FROM site_visits", data)
@@ -59,10 +57,8 @@ def get_tables(conn, used: int):
 
 def last_site():
 
-    conn = create_engine(
-        "postgresql://data:dataviz@localhost:5432/carbolytics"
-    )
-
+    conn = create_engine(os.getenv("CRAWL_SITES_DATABASE_URL"))
+    
     webs = pd.read_sql_query(
         "SELECT site_url, visit_id FROM site_visits", conn)
 
